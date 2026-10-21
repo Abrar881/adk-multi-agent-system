@@ -1,0 +1,168 @@
+﻿{
+  "eval_set_id": "acme-routing-goldens",
+  "name": "acme-routing-goldens",
+  "eval_cases": [
+    {
+      "eval_id": "finance_explicit_xero",
+      "conversation": [
+        {
+          "invocation_id": "finance_explicit_xero_inv0",
+          "user_content": {
+            "parts": [{"text": "Pull up all the open Xero invoices and tell me the totals"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've retrieved the outstanding Xero invoices. There is 1 unpaid invoice: INV-001 for Â£500.00 due on 2026-05-01 from Test Client Ltd."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "finance_domain_revenue",
+      "conversation": [
+        {
+          "invocation_id": "finance_domain_revenue_inv0",
+          "user_content": {
+            "parts": [{"text": "How much revenue did we bring in last quarter?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I'll check the Xero invoices to calculate last quarter's revenue."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "ops_job_feasibility",
+      "conversation": [
+        {
+          "invocation_id": "ops_job_feasibility_inv0",
+          "user_content": {
+            "parts": [{"text": "Check if it's feasible for a contractor to do a job in Brixton at 9am and then travel to Canary Wharf for a 10:30am start"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I'll check the travel time and job feasibility for the Brixton to Canary Wharf route."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "ops_contractor_logistics",
+      "conversation": [
+        {
+          "invocation_id": "ops_contractor_logistics_inv0",
+          "user_content": {
+            "parts": [{"text": "Add a new contractor called Dave to the sub-contractors board"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I'll add Dave to the sub-contractors board on Monday."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "dispatcher_email_reply",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_email_reply_inv0",
+          "user_content": {
+            "parts": [{"text": "Reply to the latest customer email asking about availability"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I'll check your inbox for the latest customer email and draft a reply about availability."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "dispatcher_whatsapp",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_whatsapp_inv0",
+          "user_content": {
+            "parts": [{"text": "Send a WhatsApp to our customer John to confirm his property inspection appointment is at 9am tomorrow"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I'll send a WhatsApp message to John confirming his property inspection at 9am tomorrow."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+﻿# Multi-Agent System - Cloud Build Configuration
+# Triggered on push to main branch
+
+steps:
+  # Step 1: Install dependencies and run tests
+  - name: 'python:3.12'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio freezegun
+        python -m compileall -q main.py server.py agents/ plugins/ sessions/ eval_agent/
+        python -m pytest tests/ -v --tb=short || test $? -eq 5
+    id: 'test'
+
+  # Step 2: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/multi-agent-system:$COMMIT_SHA'
+      - '.'
+    id: 'build'
+    waitFor: ['test']
+
+  # Step 3: Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/multi-agent-system:$COMMIT_SHA'
+    id: 'push'
+    waitFor: ['build']
+
+  # Step 4: Deploy to Cloud Run (production - europe-west2)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'multi-agent-system'
+      - '--image=europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/multi-agent-system:$COMMIT_SHA'
+      - '--region=europe-west2'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--service-account=Acme-runner@YOUR_GCP_PROJECT_ID.iam.gserviceaccount.com'
+      # All secrets in one --set-secrets flag (comma-separated) to avoid gcloud
+      # silently dropping secrets when multiple --set-secrets flags are passed.
+      # NOTE: xero-tenant-id is deliberately excluded â€” read live from Secret Manager
+      # by xero_server.py so dashboard org-pin changes apply without redeploy.
+      - >-
+        --set-secrets=MONDAY_API_KEY=monday-api-key:latest,XERO_CLIENT_ID=xero-client-id:latest,XERO_CLIENT_SECRET=xero-client-secret:latest,XERO_TOKEN_JSON=xero-token-json:latest,GMAIL_TOKEN_JSON=gmail-token-json:latest,GMAIL_CRED_JSON=gmail-cred-json:latest,TWILIO_ACCOUNT_SID=twilio-account-sid:latest,TWILIO_AUTH_TOKEN=twilio-auth-token:latest,TWILIO_WHATSAPP_NUMBER=twilio-whatsapp-number:latest,TWILIO_STATUS_CHECK_TEMPLATE_SID=twilio-status-check-template-sid:latest,TWILIO_TIMETABLE_TEMPLATE_SID=twilio-timetable-template-sid:latest,TWILIO_ADMIN_ALERT_TEMPLATE_SID=twilio-admin-alert-template-sid:latest,TWILIO_CONTRACTOR_EVENING_TEMPLATE_SID=twilio-contractor-evening-template-sid:latest,ENROUTE_ADMIN_PHONES=enroute-admin-phones:latest,GOOGLE_MAPS_API_KEY=google-maps-key:latest,ADMIN_PHONE=admin-phone:latest,MONDAY_WEBHOOK_SECRET=monday-webhook-secret:latest,PUBSUB_VERIFICATION_TOKEN=pubsub-verification-token:latest,XERO_WEBHOOK_KEY=xero-webhook-key:2,BILLING_ALERT_TOKEN=billing-alert-token:latest
+      # All env vars in one --set-env-vars flag (comma-separated) to avoid gcloud
+      # silently dropping vars when multiple --set-env-vars flags are passed (same
+      # bug as the --set-secrets consolidation in cdfa6a5).
+      - >-
+        --set-env-vars=GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID,GOOGLE_CLOUD_LOCATION=global,GOOGLE_GENAI_USE_VERTEXAI=TRUE,COST_GUARD_MAX_INPUT_TOKENS=2500000,COST_GUARD_DAILY_GBP=25.0,XERO_INVOICE_STATUS=DRAFT,INVOICE_CREATION_ENABLED=true,INVOICE_MAX_GBP=2500,ACTIVITY_LOG_FIRESTORE=llm_only,OPS_MODEL=gemini-3.5-flash,XERO_VAT_TAXTYPE=OUTPUT2
+      - '--memory=4Gi'
+      - '--cpu=4'
+      - '--no-cpu-throttling'
+      - '--min-instances=0'
+      - '--max-instances=10'
+      - '--cpu-boost'
+      - '--timeout=3600'
+      - '--concurrency=10'
+      - '--shutdown-timeout=120'
+    id: 'deploy'
+    waitFor: ['push']
+
+  # Step 5: Post-deploy smoke test â€” fails the build if health check returns "unhealthy"
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        SERVICE_URL=$(gcloud run services describe multi-agent-system --region=europe-west2 --format='value(status.url)')
+        echo "Smoke test: $SERVICE_URL/health"
+        for i in 1 2 3 4 5; do
+          sleep 15
+          HEALTH=$(curl -sf --max-time 30 "$SERVICE_URL/health" || echo '{"status":"request_failed"}')
+          STATUS=$(echo "$HEALTH" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status','unknown'))")
+          echo "Attempt $i/5: status=$STATUS"
+          if [ "$STATUS" = "healthy" ]; then
+            echo "Smoke test passed"
+            exit 0
+          fi
+          if [ "$STATUS" = "degraded" ] || [ "$STATUS" = "request_failed" ]; then
+            echo "ERROR: Post-deploy health check failed (status=$STATUS)"
+            exit 1
+          fi
+          echo "Status is '$STATUS', retrying..."
+        done
+        echo "ERROR: Health never reached 'healthy' after 5 attempts (75s)"
+        exit 1
+    id: 'smoke-test'
+    waitFor: ['deploy']
+
+# Store images in Artifact Registry
+images:
+  - 'europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/multi-agent-system:$COMMIT_SHA'
+
+# Build timeout (25 minutes â€” includes post-deploy smoke test)
+timeout: '1500s'
+
+# Build options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'

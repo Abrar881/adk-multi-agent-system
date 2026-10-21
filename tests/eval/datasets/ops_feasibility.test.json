@@ -1,0 +1,95 @@
+﻿{
+  "eval_set_id": "Acme-ops-feasibility-goldens",
+  "name": "Acme-ops-feasibility-goldens",
+  "description": "Ops feasibility checking â€” get board items, check travel times or optimize route based on job count",
+  "eval_cases": [
+    {
+      "eval_id": "feasibility_2_job_check",
+      "conversation": [
+        {
+          "invocation_id": "feasibility_2_job_inv0",
+          "user_content": {
+            "parts": [{"text": "Can a contractor do a 9am job in Brixton and a 10:30am job in Croydon?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Yes â€” travel time from Brixton to Croydon is approximately 45 minutes by transit. Feasible with buffer time."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}},
+              {"name": "check_job_feasibility", "args": {"origin": "Brixton", "destination": "Croydon", "first_job_time": "09:00", "second_job_time": "10:30"}},
+              {"name": "calculate_travel_time", "args": {"origin": "Brixton", "destination": "Croydon", "mode": "transit"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "feasibility_5_job_optimize",
+      "conversation": [
+        {
+          "invocation_id": "feasibility_5_job_inv0",
+          "user_content": {
+            "parts": [{"text": "Optimise tomorrow's route for 5 jobs in South London"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Optimised route: Depot â†’ Job A (Brixton) â†’ Job B (Herne Hill) â†’ Job C (Crystal Palace) â†’ Job D (Croydon) â†’ Job E (Sutton). Total travel time 2h15m."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}},
+              {"name": "get_board_items", "args": {"board_id": 393394274, "group": "This Week"}},
+              {"name": "optimize_route", "args": {"jobs": 5, "region": "South London"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "feasibility_6_plus_job_optimize",
+      "conversation": [
+        {
+          "invocation_id": "feasibility_6_job_inv0",
+          "user_content": {
+            "parts": [{"text": "We have 7 jobs tomorrow â€” can we fit them all with 2 contractors?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "With 2 contractors, 7 jobs is tight but feasible. Suggested split: Contractor 1 handles jobs 1-4, Contractor 2 handles jobs 5-7 with optimized route. 1 job may need rescheduling."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}},
+              {"name": "get_board_items", "args": {"board_id": 393394274}},
+              {"name": "check_job_feasibility", "args": {"jobs": 7, "contractors": 2}},
+              {"name": "optimize_route", "args": {"jobs": 7, "contractors": 2}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

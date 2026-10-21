@@ -1,0 +1,99 @@
+﻿{
+  "eval_set_id": "Acme-finance-chase-goldens",
+  "name": "Acme-finance-chase-goldens",
+  "description": "Finance invoice chase workflow â€” lock, fetch details, send chase email",
+  "eval_cases": [
+    {
+      "eval_id": "chase_7_day_overdue",
+      "conversation": [
+        {
+          "invocation_id": "chase_7day_inv0",
+          "user_content": {
+            "parts": [{"text": "Chase all invoices that are 7 days overdue"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Chase email sent to Test Client Ltd for INV-001 (Â£500). Payment terms reminder included."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "lock_task", "args": {"task": "chase_invoice"}},
+              {"name": "get_invoice_details", "args": {"invoice_number": "INV-001"}},
+              {"name": "send_email", "args": {"to": "client@test.com", "subject": "Payment Reminder â€” INV-001"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "chase_30_day_overdue",
+      "conversation": [
+        {
+          "invocation_id": "chase_30day_inv0",
+          "user_content": {
+            "parts": [{"text": "Invoice INV-003 is 30 days overdue â€” escalate it"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Invoice INV-003 is 30 days overdue (Â£750). Final demand email sent and admin alerted."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "lock_task", "args": {"task": "chase_invoice"}},
+              {"name": "get_invoice_details", "args": {"invoice_number": "INV-003"}},
+              {"name": "send_email", "args": {"template": "final_demand"}},
+              {"name": "send_admin_alert", "args": {"message": "INV-003 escalated â€” 30 days overdue"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "chase_multiple_overdue",
+      "conversation": [
+        {
+          "invocation_id": "chase_multi_inv0",
+          "user_content": {
+            "parts": [{"text": "Run the afternoon chase â€” all outstanding invoices over 7 days"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Sent 4 chase emails: 2 first reminders, 1 second reminder, 1 final demand. Admin notified of escalation."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "lock_task", "args": {}},
+              {"name": "list_unpaid_invoices", "args": {}},
+              {"name": "get_invoice_details", "args": {}},
+              {"name": "send_email", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

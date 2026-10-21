@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Secrets & credentials — NEVER commit these
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*secret*.json
+*.credentials
+service-account*.json
+keys.json
+credentials.json
+token.json
+xero_token.json
+monday.json
+tokens/
+webOAuth.json
+
+# ADK session state
+**/.adk/
+
+# IDE / local tools
+.cursor/
+.claude/
+.opencode/
+.claudeignore
+.superpowers/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scratch / local-only files
+env_additions.txt
+debug_rag.py
+rustup-init.exe
+email_template
+firestore.indexes.json
+GCPlog.json
+CODEBASE_ANALYSIS_REPORT.md
+uv.lock

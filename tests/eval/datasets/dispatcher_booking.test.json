@@ -1,0 +1,95 @@
+﻿{
+  "eval_set_id": "Acme-dispatcher-booking-goldens",
+  "name": "Acme-dispatcher-booking-goldens",
+  "description": "Dispatcher booking creation flow â€” search items, create booking, send confirmation",
+  "eval_cases": [
+    {
+      "eval_id": "dispatcher_booking_new",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_booking_new_inv0",
+          "user_content": {
+            "parts": [{"text": "Book an inventory for 10 High Street London, 3-bed, Tuesday 10am"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've created booking ref BK-001 for 10 High Street London (3-bed) on Tuesday at 10am. A confirmation email has been sent."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}},
+              {"name": "search_items", "args": {"query": "10 High Street London"}},
+              {"name": "create_inventory_booking", "args": {"address": "10 High Street London", "bedrooms": 3, "datetime": "Tuesday 10am"}},
+              {"name": "send_email", "args": {"to": "client@example.com", "subject": "Booking Confirmation"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "dispatcher_booking_missing_fields",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_booking_missing_inv0",
+          "user_content": {
+            "parts": [{"text": "Book a property for tomorrow"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I'd be happy to book a property inspection, but I need a few more details: the full address and how many bedrooms is the property?"}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}},
+              {"name": "search_items", "args": {"query": "tomorrow property"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "dispatcher_booking_amendment",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_booking_amend_inv0",
+          "user_content": {
+            "parts": [{"text": "Change the booking at 10 High Street from Tuesday 10am to Wednesday 2pm"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Booking BK-001 has been updated from Tuesday 10am to Wednesday 2pm. Confirmation sent."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}},
+              {"name": "search_items", "args": {"query": "10 High Street"}},
+              {"name": "update_column_value", "args": {"item_id": 1, "column_id": "datetime", "value": "Wednesday 2pm"}},
+              {"name": "send_email", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

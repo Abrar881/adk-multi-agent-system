@@ -1,0 +1,17 @@
+﻿{
+  "name": "Multi-Agent System Operations Hub",
+  "short_name": "Multi-Agent System",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/static/Acme_new.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+﻿{
+  "eval_set_id": "Acme-finance-reconciliation-goldens",
+  "name": "Acme-finance-reconciliation-goldens",
+  "description": "Finance reconciliation workflow â€” lock, fetch invoices, match to Monday board, update, release lock",
+  "eval_cases": [
+    {
+      "eval_id": "reconciliation_basic",
+      "conversation": [
+        {
+          "invocation_id": "reconciliation_basic_inv0",
+          "user_content": {
+            "parts": [{"text": "Run the morning reconciliation â€” match yesterday's payments to Xero"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Reconciliation complete. 3 payments matched: INV-001 (Â£250), INV-002 (Â£180), INV-003 (Â£95). 1 new invoice created on Monday board."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "lock_task", "args": {"task": "reconciliation"}},
+              {"name": "list_unpaid_invoices", "args": {}},
+              {"name": "search_items", "args": {"query": "INV-001 INV-002"}},
+              {"name": "update_column_value", "args": {"item_id": 1, "column_id": "payment_status", "value": "paid"}},
+              {"name": "release_lock", "args": {"resource_id": "reconciliation"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "reconciliation_partial_match",
+      "conversation": [
+        {
+          "invocation_id": "reconciliation_partial_inv0",
+          "user_content": {
+            "parts": [{"text": "Reconcile today's payments â€” some are partial and some are overdue"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Processed 5 payments: 3 fully matched, 1 partial payment flagged, 1 overdue invoice escalated."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "lock_task", "args": {"task": "reconciliation"}},
+              {"name": "list_unpaid_invoices", "args": {}},
+              {"name": "search_items", "args": {}},
+              {"name": "update_multiple_columns", "args": {}},
+              {"name": "release_lock", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

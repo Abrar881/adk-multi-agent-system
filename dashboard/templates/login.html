@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Agent System â€” Login</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='Acme_new.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='Acme_new.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#020617">
+  <meta name="apple-mobile-web-app-title" content="Multi-Agent System">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 flex items-center justify-center min-h-screen">
+  <div class="bg-slate-900 rounded-3xl shadow-2xl p-8 w-full max-w-sm border border-slate-800 backdrop-blur-md bg-opacity-95 text-center">
+    <div class="flex justify-center flex-col items-center">
+      <img src="{{ url_for('static', filename='Acme_new.png') }}" alt="Acme Property Services Logo" class="h-16 w-auto mb-4" />
+      <h1 class="text-2xl font-bold text-white tracking-tight mb-1">Multi-Agent System</h1>
+      <p class="text-slate-400 text-sm mb-8 font-medium">Activity Dashboard</p>
+    </div>
+    
+    {% if error %}
+    <div class="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3 mb-6 shadow-inner">{{ error }}</div>
+    {% endif %}
+    
+    <form method="POST" action="/login" class="text-left">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <label class="block text-slate-300 text-sm font-medium mb-2" for="password">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        required
+        autofocus
+        class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:bg-slate-800 mb-6 transition-all"
+        placeholder="Enter dashboard password"
+      />
+      <button
+        type="submit"
+        class="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl py-3 transition-all shadow-lg hover:shadow-orange-600/25 active:scale-[0.98]"
+      >
+        Sign In to Command Center
+      </button>
+    </form>
+  </div>
+</body>
+</html>

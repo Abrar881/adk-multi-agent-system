@@ -1,0 +1,90 @@
+﻿{
+  "eval_set_id": "Acme-finance-trajectory-goldens",
+  "name": "Acme-finance-trajectory-goldens",
+  "eval_cases": [
+    {
+      "eval_id": "finance_list_unpaid",
+      "conversation": [
+        {
+          "invocation_id": "finance_list_unpaid_inv0",
+          "user_content": {
+            "parts": [{"text": "List all unpaid invoices in Xero"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "There is 1 unpaid invoice: INV-001 for Â£500.00 due 2026-05-01 from Test Client Ltd."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "list_unpaid_invoices", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "finance_invoice_details",
+      "conversation": [
+        {
+          "invocation_id": "finance_invoice_details_inv0",
+          "user_content": {
+            "parts": [{"text": "Get the details for Xero invoice INV-001"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Invoice INV-001 is AUTHORISED for Â£500.00 from Test Client Ltd."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "get_invoice_details", "args": {"invoice_number": "INV-001"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "finance_chase_overdue",
+      "conversation": [
+        {
+          "invocation_id": "finance_chase_overdue_inv0",
+          "user_content": {
+            "parts": [{"text": "Chase any overdue Xero invoices and send reminder emails"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I will check for overdue invoices. Found 1 unpaid invoice: INV-001 for Â£500.00 from Test Client Ltd. I will send a reminder email."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "finance"}},
+              {"name": "list_unpaid_invoices", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

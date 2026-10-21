@@ -1,0 +1,76 @@
+﻿# Acme Dashboard â€” Cloud Build pipeline
+# Triggered by a separate Cloud Build trigger watching dashboard/** only.
+# Build context is dashboard/ â€” no longer needs repo root.
+
+steps:
+  # Step 1: Syntax check â€” fail fast before building the image
+  - name: 'python:3.12'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'python -m compileall -q .'
+    id: 'compile'
+
+  # Step 2: Build dashboard image from dashboard/ context only
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile'
+      - '-t'
+      - 'europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/Acme-dashboard:$BUILD_ID'
+      - '.'
+    id: 'build'
+    waitFor: ['compile']
+
+  # Step 2: Push image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/Acme-dashboard:$BUILD_ID']
+    id: 'push'
+    waitFor: ['build']
+
+  # Step 3: Deploy to Cloud Run
+  # Secrets required: dashboard-password, dashboard-secret-key, google-genai (for embeddings).
+  # All Xero/Gmail/Twilio/Monday/Maps secrets removed â€” handled by multi-agent-system only.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'Acme-dashboard'
+      - '--image=europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/Acme-dashboard:$BUILD_ID'
+      - '--region=europe-west2'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--service-account=Acme-runner@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--set-secrets=DASHBOARD_PASSWORD=dashboard-password:latest'
+      - '--set-secrets=DASHBOARD_SECRET_KEY=dashboard-secret-key:latest'
+      - '--set-secrets=ADMIN_PHONE=admin-phone:latest'
+      - '--set-secrets=GMAIL_WEB_CRED_JSON=gmail-web-cred-json:latest'
+      - '--set-secrets=XERO_CLIENT_ID=xero-client-id:latest'
+      - '--set-secrets=XERO_CLIENT_SECRET=xero-client-secret:latest'
+      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID'
+      - '--set-env-vars=GOOGLE_CLOUD_LOCATION=global'
+      - '--set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=TRUE'
+      - '--set-env-vars=Acme_MAS_URL=https://multi-agent-system-828224712340.europe-west2.run.app'
+      - '--set-env-vars=DASHBOARD_URL=https://Acme-dashboard-828224712340.europe-west2.run.app'
+      - '--set-env-vars=BILLING_TABLE=gcp_billing_export_v1_011E01_E785A0_84C3EA'
+      - '--set-env-vars=GBP_USD_RATE=0.79'
+      - '--set-env-vars=BILLING_DATASET=billing_export'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--timeout=600'
+      - '--concurrency=10'
+      - '--min-instances=1'
+      - '--max-instances=5'
+    id: 'deploy'
+    waitFor: ['push']
+
+images:
+  - 'europe-west2-docker.pkg.dev/$PROJECT_ID/multi-agent-system/Acme-dashboard:$BUILD_ID'
+
+timeout: '900s'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'

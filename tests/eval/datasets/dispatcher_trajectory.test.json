@@ -1,0 +1,90 @@
+﻿{
+  "eval_set_id": "Acme-dispatcher-trajectory-goldens",
+  "name": "Acme-dispatcher-trajectory-goldens",
+  "eval_cases": [
+    {
+      "eval_id": "dispatcher_list_emails",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_list_emails_inv0",
+          "user_content": {
+            "parts": [{"text": "Check my inbox for unread emails"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "You have 1 unread email: 'Booking Request' from client@example.com."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}},
+              {"name": "list_unread_emails", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "dispatcher_send_whatsapp",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_send_whatsapp_inv0",
+          "user_content": {
+            "parts": [{"text": "Send a WhatsApp message to +447911123456 saying the job is confirmed for tomorrow at 9am"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "WhatsApp message sent successfully to +447911123456. The job confirmation was delivered."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}},
+              {"name": "send_whatsapp_message", "args": {"to_phone": "+447911123456", "message_text": "The job is confirmed for tomorrow at 9am"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "dispatcher_send_email",
+      "conversation": [
+        {
+          "invocation_id": "dispatcher_send_email_inv0",
+          "user_content": {
+            "parts": [{"text": "Send a confirmation email to client@example.com confirming their inventory booking at 10 Baker Street, London E1 6AN on Monday 21 April at 9am. The price is Â£350 with key collection from the letting agent."}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've sent a confirmation email to client@example.com with the booking details for the inventory at 10 Baker Street on Monday 21 April at 9am."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "dispatcher"}},
+              {"name": "send_email", "args": {"to_email": "client@example.com"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

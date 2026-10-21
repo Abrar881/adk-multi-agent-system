@@ -1,0 +1,90 @@
+﻿{
+  "eval_set_id": "Acme-ops-trajectory-goldens",
+  "name": "Acme-ops-trajectory-goldens",
+  "eval_cases": [
+    {
+      "eval_id": "ops_system_status",
+      "conversation": [
+        {
+          "invocation_id": "ops_system_status_inv0",
+          "user_content": {
+            "parts": [{"text": "What is the current status of the operations system?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "The operations system is operational and Google Maps is connected."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}},
+              {"name": "get_ops_status", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "ops_travel_time",
+      "conversation": [
+        {
+          "invocation_id": "ops_travel_time_inv0",
+          "user_content": {
+            "parts": [{"text": "How long does it take to travel from London Bridge to Canary Wharf by transit?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "The travel time from London Bridge to Canary Wharf by transit is approximately 45 minutes (12.3 km)."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}},
+              {"name": "calculate_travel_time", "args": {"origin": "London Bridge", "destination": "Canary Wharf", "mode": "transit"}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "ops_board_items",
+      "conversation": [
+        {
+          "invocation_id": "ops_board_items_inv0",
+          "user_content": {
+            "parts": [{"text": "On Monday.com, show me the items on the Daily Tasks board"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "The Daily Tasks board has 1 item: Test Job (In Progress)."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "transfer_to_agent", "args": {"agent_name": "ops"}},
+              {"name": "get_board_items", "args": {"board_id": 393394274}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "multi-agent-system",
+        "user_id": "system",
+        "state": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+Acme Property Services — Inventory Pricing
+
+All prices exclude VAT. VAT charged at 20%.
+
+INVENTORY REPORTS (unfurnished)
+Studio / 1 bed:  £85
+2 bed:           £95
+3 bed:           £110
+4 bed:           £125
+5 bed:           £140
+6 bed+:          POA
+
+INVENTORY REPORTS (furnished — add 20%)
+Studio / 1 bed:  £102
+2 bed:           £114
+3 bed:           £132
+4 bed:           £150
+5 bed:           £168
+
+CHECK-IN (with inventory)
+Add £35 to any inventory price.
+
+CHECK-OUT
+Studio / 1 bed:  £75
+2 bed:           £85
+3 bed:           £100
+4 bed:           £115
+5 bed+:          POA
+
+MID-TERM INSPECTION
+Flat rate: £65 per visit.
+
+Note: surcharges apply for properties outside Zone 4, weekend/bank holiday bookings, and short-notice bookings (< 48 hours).
